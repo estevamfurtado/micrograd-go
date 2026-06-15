@@ -14,7 +14,7 @@ func main() {
 	fmt.Printf("model has %d parameters\n", len(model.Parameters()))
 
 	// i only have 100 samples
-	lr := 0.01
+	lr := 1.0 // matches Karpathy's demo schedule (decays to ~0.1 over 100 epochs)
 	epochs := 100
 	batch_size := len(data)
 	trainer := NewTrainer(model, lr, epochs, batch_size)

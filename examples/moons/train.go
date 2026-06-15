@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/estevamfurtado/micrograd-go/datasets"
 	"github.com/estevamfurtado/micrograd-go/engine"
@@ -21,22 +22,33 @@ func NewTrainer(model *nn.MLP, lr float64, epochs int, batch_size int) *Trainer 
 }
 
 func (t *Trainer) learningRate(epoch int) float64 {
-	return 1.0 - 0.9*float64(epoch)/100
+	if t.epochs <= 1 {
+		return t.lr
+	}
+	return t.lr * (1.0 - 0.9*float64(epoch)/float64(t.epochs))
+}
+
+func (t *Trainer) zeroGrad() {
+	for _, p := range t.model.Parameters() {
+		p.Grad = 0
+	}
 }
 
 func (t *Trainer) Train(data datasets.Samples) {
-	data.Shuffle()
+	rng := rand.New(rand.NewSource(1337))
 
 	for epoch := 0; epoch < t.epochs; epoch++ {
+		data.Shuffle(rng)
+
 		batches := len(data) / t.batch_size
 		lr := t.learningRate(epoch)
-		fmt.Printf("epoch %d of %d (lr %f) batches %d", epoch, t.epochs, lr, batches)
+		fmt.Printf("epoch %d of %d (lr %f) batches %d\n", epoch, t.epochs, lr, batches)
 		for batch := 0; batch < batches; batch++ {
-			fmt.Printf("batch %d: ", batch)
+			fmt.Printf("  batch %d: ", batch)
 
 			batch_data := data[batch*t.batch_size : (batch+1)*t.batch_size]
 
-			// forward pass
+			t.zeroGrad()
 			loss, accuracy := t.loss(batch_data)
 			fmt.Printf("loss %f, accuracy %f%%\n", loss.Data, accuracy*100)
 
@@ -53,7 +65,7 @@ func (t *Trainer) loss(batch_data []datasets.Sample) (*engine.Value, float64) {
 	score := 0
 
 	// Data Loss
-	losses := make([]*engine.Value, len(batch_data))
+	losses := make([]*engine.Value, 0, len(batch_data))
 	for _, sample := range batch_data {
 		// forward pass
 		inputs := []*engine.Value{
@@ -74,7 +86,7 @@ func (t *Trainer) loss(batch_data []datasets.Sample) (*engine.Value, float64) {
 	// Regularization Loss
 	alpha := 1e-4
 	parameters := t.model.Parameters()
-	regLosses := make([]*engine.Value, len(parameters))
+	regLosses := make([]*engine.Value, 0, len(parameters))
 	for _, parameter := range parameters {
 		regLosses = append(regLosses, engine.Mul(parameter, parameter))
 	}

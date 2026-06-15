@@ -33,8 +33,7 @@ func MakeMoons(nSamples int, noise float64, rng *rand.Rand) Samples {
 	return samples
 }
 
-func (s Samples) Shuffle() {
-	rng := rand.New(rand.NewSource(1337))
+func (s Samples) Shuffle(rng *rand.Rand) {
 	rng.Shuffle(len(s), func(i, j int) {
 		s[i], s[j] = s[j], s[i]
 	})
