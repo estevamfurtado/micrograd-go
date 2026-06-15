@@ -3,14 +3,23 @@ package main
 import (
 	"fmt"
 
+	"github.com/estevamfurtado/micrograd-go/engine"
 	"github.com/estevamfurtado/micrograd-go/nn"
 )
+
+func linear(x *engine.Value) *engine.Value {
+	return x
+}
 
 func main() {
 	data := loadMoons()
 	fmt.Printf("loaded %d samples\n", len(data))
 
-	model := nn.NewMLP(2, []int{16, 16, 1}) // 2-layer neural network
+	in := nn.NewLayer(2, 16, nn.RandomInit, engine.ReLU)
+	h1 := nn.NewLayer(16, 16, nn.RandomInit, engine.ReLU)
+	out := nn.NewLayer(16, 1, nn.RandomInit, linear)
+
+	model := nn.NewMLP(in, h1, out) // 2-layer neural network
 	fmt.Printf("model has %d parameters\n", len(model.Parameters()))
 
 	// i only have 100 samples

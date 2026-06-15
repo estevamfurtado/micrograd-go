@@ -1,18 +1,8 @@
 package nn
 
 import (
-	"math/rand"
-
 	"github.com/estevamfurtado/micrograd-go/engine"
 )
-
-func randomWeight() float64 {
-	return rand.Float64()*2 - 1
-}
-
-func linear(x *engine.Value) *engine.Value {
-	return x
-}
 
 type Neuron struct {
 	weights    []*engine.Value
@@ -20,16 +10,16 @@ type Neuron struct {
 	activation func(x *engine.Value) *engine.Value
 }
 
-func NewNeuron(in int, nonlin bool) *Neuron {
-	activation := engine.ReLU
-	if !nonlin {
-		activation = linear
-	}
+type ParamsFactory struct {
+	BiasGenerator   func() float64
+	WeightGenerator func(fanIn int) float64
+}
 
-	bias := engine.Const(randomWeight())
+func NewNeuron(in int, factory ParamsFactory, activation func(x *engine.Value) *engine.Value) *Neuron {
+	bias := engine.Const(factory.BiasGenerator())
 	weights := make([]*engine.Value, in)
 	for i := 0; i < in; i++ {
-		weights[i] = engine.Const(randomWeight())
+		weights[i] = engine.Const(factory.WeightGenerator(in))
 	}
 	return &Neuron{
 		weights:    weights,

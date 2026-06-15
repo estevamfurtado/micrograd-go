@@ -3,15 +3,17 @@ package nn
 import "github.com/estevamfurtado/micrograd-go/engine"
 
 type Layer struct {
+	in      int
+	out     int
 	neurons []*Neuron
 }
 
-func NewLayer(in, out int, nonlin bool) *Layer {
+func NewLayer(in, out int, factory ParamsFactory, activation func(x *engine.Value) *engine.Value) *Layer {
 	neurons := make([]*Neuron, out)
 	for i := range neurons {
-		neurons[i] = NewNeuron(in, nonlin)
+		neurons[i] = NewNeuron(in, factory, activation)
 	}
-	return &Layer{neurons: neurons}
+	return &Layer{in: in, out: out, neurons: neurons}
 }
 
 func (l *Layer) Calculate(inputs []*engine.Value) []*engine.Value {

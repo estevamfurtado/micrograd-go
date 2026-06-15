@@ -6,13 +6,11 @@ type MLP struct {
 	layers []*Layer
 }
 
-func NewMLP(in int, sizes []int) *MLP {
-	layers := make([]*Layer, len(sizes))
-	prev := in
-	for i, out := range sizes {
-		nonlin := i != len(sizes)-1
-		layers[i] = NewLayer(prev, out, nonlin)
-		prev = out
+func NewMLP(layers ...*Layer) *MLP {
+	for i := 0; i < len(layers)-1; i++ {
+		if layers[i].out != layers[i+1].in {
+			panic("number of inputs does not match number of outputs")
+		}
 	}
 
 	return &MLP{layers: layers}

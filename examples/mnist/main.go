@@ -5,24 +5,31 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/estevamfurtado/micrograd-go/engine"
 	"github.com/estevamfurtado/micrograd-go/nn"
 )
 
 // Config holds all training settings. Edit these values directly.
 type Config struct {
-	Limit     int     // max training rows (0 = full 60k)
-	TestLimit int     // max test rows for eval (0 = full 10k)
-	Epochs    int     // training epochs
-	BatchSize int     // batch size
-	LR        float64 // initial learning rate (decays per epoch)
+	HiddenSize int     // hidden layer size
+	Limit      int     // max training rows (0 = full 60k)
+	TestLimit  int     // max test rows for eval (0 = full 10k)
+	Epochs     int     // training epochs
+	BatchSize  int     // batch size
+	LR         float64 // initial learning rate (decays per epoch)
 }
 
 var config = Config{
-	Limit:     60_000,
-	TestLimit: 10_000,
-	Epochs:    10,
-	BatchSize: 32,
-	LR:        0.02,
+	HiddenSize: 16,
+	Limit:      60_000,
+	TestLimit:  10_000,
+	Epochs:     10,
+	BatchSize:  32,
+	LR:         0.02,
+}
+
+func linear(x *engine.Value) *engine.Value {
+	return x
 }
 
 func main() {
@@ -47,7 +54,10 @@ func main() {
 
 	fmt.Printf("train: %d samples, test: %d samples\n", len(train), len(test))
 
-	model := nn.NewMLP(numPixels, []int{16, numClasses})
+	hidden := nn.NewLayer(numPixels, config.HiddenSize, nn.HeInit, engine.ReLU)
+	out := nn.NewLayer(config.HiddenSize, numClasses, nn.XavierInit, linear)
+
+	model := nn.NewMLP(hidden, out)
 	fmt.Printf("model: %d parameters\n", len(model.Parameters()))
 
 	loss := &CrossEntropyCalculator{}
