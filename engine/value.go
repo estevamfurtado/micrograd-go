@@ -11,6 +11,8 @@ const (
 	OpMul   Op = "x"
 	OpPow   Op = "**"
 	OpReLU  Op = "relu"
+	OpExp   Op = "exp"
+	OpLog   Op = "log"
 	OpConst Op = "const"
 )
 
@@ -131,5 +133,23 @@ func ReLU(a *Value) *Value {
 		}
 	}
 
+	return out
+}
+
+func Exp(a *Value) *Value {
+	result := math.Exp(a.Data)
+	out := New(result, OpExp, []*Value{a})
+	out.backward = func() {
+		a.Grad += result * out.Grad
+	}
+	return out
+}
+
+func Log(a *Value) *Value {
+	result := math.Log(a.Data)
+	out := New(result, OpLog, []*Value{a})
+	out.backward = func() {
+		a.Grad += (1.0 / a.Data) * out.Grad
+	}
 	return out
 }

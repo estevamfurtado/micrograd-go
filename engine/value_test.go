@@ -42,6 +42,18 @@ func TestValue(t *testing.T) {
 		c = ReLU(a)
 		assert.Equal(t, c.Data, 0.0)
 	})
+
+	t.Run("Exp", func(t *testing.T) {
+		a.Data = 0.0
+		c := Exp(a)
+		assert.InDelta(t, 1.0, c.Data, 1e-9)
+	})
+
+	t.Run("Log", func(t *testing.T) {
+		a.Data = 1.0
+		c := Log(a)
+		assert.InDelta(t, 0.0, c.Data, 1e-9)
+	})
 }
 
 func TestValue_Backward(t *testing.T) {
