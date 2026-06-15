@@ -10,6 +10,10 @@ func randomWeight() float64 {
 	return rand.Float64()*2 - 1
 }
 
+func linear(x *engine.Value) *engine.Value {
+	return x
+}
+
 // Neuron
 
 type Neuron struct {
@@ -18,7 +22,12 @@ type Neuron struct {
 	activation func(x *engine.Value) *engine.Value
 }
 
-func NewNeuron(in int) *Neuron {
+func NewNeuron(in int, nonlin bool) *Neuron {
+	activation := engine.ReLU
+	if !nonlin {
+		activation = linear
+	}
+
 	bias := engine.Const(randomWeight())
 	weights := make([]*engine.Value, in)
 	for i := 0; i < in; i++ {
@@ -27,7 +36,7 @@ func NewNeuron(in int) *Neuron {
 	return &Neuron{
 		weights:    weights,
 		bias:       bias,
-		activation: engine.ReLU,
+		activation: activation,
 	}
 }
 
@@ -55,10 +64,10 @@ type Layer struct {
 	neurons []*Neuron
 }
 
-func NewLayer(in, out int) *Layer {
+func NewLayer(in, out int, nonlin bool) *Layer {
 	neurons := make([]*Neuron, out)
 	for i := range neurons {
-		neurons[i] = NewNeuron(in)
+		neurons[i] = NewNeuron(in, nonlin)
 	}
 	return &Layer{neurons: neurons}
 }
@@ -89,7 +98,8 @@ func NewMLP(in int, sizes []int) *MLP {
 	layers := make([]*Layer, len(sizes))
 	prev := in
 	for i, out := range sizes {
-		layers[i] = NewLayer(prev, out)
+		nonlin := i != len(sizes)-1
+		layers[i] = NewLayer(prev, out, nonlin)
 		prev = out
 	}
 
