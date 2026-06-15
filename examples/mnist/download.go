@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 const (
@@ -22,7 +23,11 @@ var dataFiles = []struct {
 }
 
 func dataDir() string {
-	return filepath.Join("examples", "mnist", "data")
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		return "data"
+	}
+	return filepath.Join(filepath.Dir(file), "data")
 }
 
 func ensureData() error {

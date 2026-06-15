@@ -19,6 +19,14 @@ func TestValue(t *testing.T) {
 		assert.Equal(t, c.Data, 8.0)
 	})
 
+	t.Run("Mul backward with zero operand", func(t *testing.T) {
+		zero, w := Const(0.0), Const(2.5)
+		out := Mul(zero, w)
+		out.Backward()
+		assert.Equal(t, 2.5, zero.Grad) // ∂(0·w)/∂0 = w
+		assert.Equal(t, 0.0, w.Grad)    // ∂(0·w)/∂w = 0
+	})
+
 	t.Run("Pow", func(t *testing.T) {
 		c := Pow(b, 3)
 		assert.Equal(t, c.Data, 8.0)

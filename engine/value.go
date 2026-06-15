@@ -93,8 +93,14 @@ func Mul(vs ...*Value) *Value {
 	out := New(result, OpMul, vs)
 
 	out.backward = func() {
-		for _, v := range vs {
-			v.Grad += (result / v.Data) * out.Grad
+		for i, v := range vs {
+			grad := 1.0
+			for j, u := range vs {
+				if i != j {
+					grad *= u.Data
+				}
+			}
+			v.Grad += grad * out.Grad
 		}
 	}
 
