@@ -19,10 +19,19 @@ type Trainer struct {
 	epochs     int
 	batch_size int
 	lossCalc   LossCalculator
+	testData   Samples
 }
 
-func NewTrainer(model *nn.MLP, lr float64, epochs, batchSize int, lossCalc LossCalculator) *Trainer {
-	return &Trainer{model: model, lr: lr, epochs: epochs, batch_size: batchSize, lossCalc: lossCalc}
+func NewTrainer(model *nn.MLP, lr float64, epochs, batchSize int, lossCalc LossCalculator, testData Samples) *Trainer {
+	return &Trainer{model: model, lr: lr, epochs: epochs, batch_size: batchSize, lossCalc: lossCalc, testData: testData}
+}
+
+func (t *Trainer) SampleInputs(sample Sample) []*engine.Value {
+	inputs := make([]*engine.Value, numPixels)
+	for i, pix := range sample.X {
+		inputs[i] = engine.Const(pix)
+	}
+	return inputs
 }
 
 func (t *Trainer) learningRate(epoch int) float64 {
@@ -39,13 +48,16 @@ func (t *Trainer) zeroGrad() {
 }
 
 func (t *Trainer) Train(data Samples) {
-	rng := rand.New(rand.NewSource(1337))
-	step := 1
+	testAccuracy := t.Accuracy(t.testData)
+	fmt.Printf("initial test accuracy: %.1f%%\n", testAccuracy*100)
 
+	rng := rand.New(rand.NewSource(1337))
 	for epoch := 0; epoch < t.epochs; epoch++ {
 		data.Shuffle(rng)
 		batches := len(data) / t.batch_size
 		lr := t.learningRate(epoch)
+
+		fmt.Printf("epoch %d/%d: learning rate %.3f\n", epoch, t.epochs, lr)
 
 		for batch := 0; batch < batches; batch++ {
 			batchData := data[batch*t.batch_size : (batch+1)*t.batch_size]
@@ -53,8 +65,8 @@ func (t *Trainer) Train(data Samples) {
 			t.zeroGrad()
 			loss, accuracy := t.loss(batchData)
 
-			if step%100 == 0 {
-				fmt.Printf("step %d loss %f, accuracy %f%%\n", step, loss.Data, accuracy*100)
+			if batch%50 == 0 {
+				fmt.Printf("\tbatch %d/%d: loss %.2f, accuracy %.1f%%\n", batch, batches, loss.Data, accuracy*100)
 			}
 
 			loss.Backward()
@@ -62,9 +74,14 @@ func (t *Trainer) Train(data Samples) {
 			for _, p := range t.model.Parameters() {
 				p.Data -= lr * p.Grad
 			}
-			step++
 		}
+
+		testAccuracy := t.Accuracy(t.testData)
+		fmt.Printf("epoch %d: test accuracy: %.1f%%\n", epoch, testAccuracy*100)
 	}
+
+	fmt.Printf("final test accuracy: %.1f%%\n", testAccuracy*100)
+	fmt.Printf("final train accuracy: %.1f%%\n", t.Accuracy(data)*100)
 }
 
 func (t *Trainer) loss(batchData []Sample) (*engine.Value, float64) {
@@ -72,7 +89,7 @@ func (t *Trainer) loss(batchData []Sample) (*engine.Value, float64) {
 	score := 0
 
 	for _, sample := range batchData {
-		logits := t.model.Calculate(sampleInputs(sample.X))
+		logits := t.model.Calculate(t.SampleInputs(sample))
 		loss := t.lossCalc.Calculate(logits, sample)
 		losses = append(losses, loss)
 		if t.lossCalc.IsAccurate(logits, sample) {
@@ -87,21 +104,6 @@ func (t *Trainer) loss(batchData []Sample) (*engine.Value, float64) {
 	return totalLoss, float64(score) / float64(len(batchData))
 }
 
-// Accuracy runs forward-only classification accuracy on data.
-func (t *Trainer) Accuracy(data Samples) float64 {
-	if len(data) == 0 {
-		return 0
-	}
-	score := 0
-	for _, sample := range data {
-		logits := t.model.Calculate(sampleInputs(sample.X))
-		if t.lossCalc.IsAccurate(logits, sample) {
-			score++
-		}
-	}
-	return float64(score) / float64(len(data))
-}
-
 func (t *Trainer) computeRegularizationLoss(model *nn.MLP) *engine.Value {
 	alpha := 1e-4
 	parameters := model.Parameters()
@@ -110,4 +112,19 @@ func (t *Trainer) computeRegularizationLoss(model *nn.MLP) *engine.Value {
 		regLosses = append(regLosses, engine.Mul(parameter, parameter))
 	}
 	return engine.Mul(engine.Add(regLosses...), engine.Const(alpha))
+}
+
+// Accuracy runs forward-only classification accuracy on data.
+func (t *Trainer) Accuracy(data Samples) float64 {
+	if len(data) == 0 {
+		return 0
+	}
+	score := 0
+	for _, sample := range data {
+		logits := t.model.Calculate(t.SampleInputs(sample))
+		if t.lossCalc.IsAccurate(logits, sample) {
+			score++
+		}
+	}
+	return float64(score) / float64(len(data))
 }

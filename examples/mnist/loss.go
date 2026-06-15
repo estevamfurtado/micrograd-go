@@ -66,11 +66,3 @@ func argmax(logits []*engine.Value) int {
 	}
 	return best
 }
-
-func sampleInputs(x [numPixels]float64) []*engine.Value {
-	inputs := make([]*engine.Value, numPixels)
-	for i, pix := range x {
-		inputs[i] = engine.Const(pix)
-	}
-	return inputs
-}

@@ -18,10 +18,10 @@ type Config struct {
 }
 
 var config = Config{
-	Limit:     1000,
-	TestLimit: 500,
-	Epochs:    5,
-	BatchSize: 32,
+	Limit:     60000,
+	TestLimit: 10000,
+	Epochs:    100,
+	BatchSize: 64,
 	LR:        0.05,
 }
 
@@ -51,18 +51,6 @@ func main() {
 	fmt.Printf("model: %d parameters\n", len(model.Parameters()))
 
 	loss := &CrossEntropyCalculator{}
-	trainer := NewTrainer(model, config.LR, config.Epochs, config.BatchSize, loss)
-
-	// initial accuracy
-	initAcc := trainer.Accuracy(train)
-	fmt.Printf("initial train accuracy: %.1f%% (expect ~10%%)\n", initAcc*100)
-
-	// train
+	trainer := NewTrainer(model, config.LR, config.Epochs, config.BatchSize, loss, test)
 	trainer.Train(train)
-
-	// final accuracy
-	trainAcc := trainer.Accuracy(train)
-	testAcc := trainer.Accuracy(test)
-	fmt.Printf("final train accuracy: %.1f%%\n", trainAcc*100)
-	fmt.Printf("final test accuracy:  %.1f%%\n", testAcc*100)
 }
