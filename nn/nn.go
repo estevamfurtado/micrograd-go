@@ -87,9 +87,10 @@ type MLP struct {
 
 func NewMLP(in int, sizes []int) *MLP {
 	layers := make([]*Layer, len(sizes))
-	for _, out := range sizes {
-		layers = append(layers, NewLayer(in, out))
-		in = out
+	prev := in
+	for i, out := range sizes {
+		layers[i] = NewLayer(prev, out)
+		prev = out
 	}
 
 	return &MLP{layers: layers}
