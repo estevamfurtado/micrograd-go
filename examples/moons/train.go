@@ -37,26 +37,27 @@ func (t *Trainer) zeroGrad() {
 func (t *Trainer) Train(data datasets.Samples) {
 	rng := rand.New(rand.NewSource(1337))
 
+	step := 1
+
 	for epoch := 0; epoch < t.epochs; epoch++ {
 		data.Shuffle(rng)
 
 		batches := len(data) / t.batch_size
 		lr := t.learningRate(epoch)
-		fmt.Printf("epoch %d of %d (lr %f) batches %d\n", epoch, t.epochs, lr, batches)
 		for batch := 0; batch < batches; batch++ {
-			fmt.Printf("  batch %d: ", batch)
-
 			batch_data := data[batch*t.batch_size : (batch+1)*t.batch_size]
 
 			t.zeroGrad()
 			loss, accuracy := t.loss(batch_data)
-			fmt.Printf("loss %f, accuracy %f%%\n", loss.Data, accuracy*100)
+			fmt.Printf("step %d loss %f, accuracy %f%%\n", step, loss.Data, accuracy*100)
 
 			loss.Backward()
 
 			for _, p := range t.model.Parameters() {
 				p.Data -= lr * p.Grad
 			}
+
+			step++
 		}
 	}
 }
