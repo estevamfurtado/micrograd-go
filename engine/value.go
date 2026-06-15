@@ -1,1 +1,134 @@
 package engine
+
+import (
+	"fmt"
+	"math"
+)
+
+type Op string
+
+const (
+	OpAdd   Op = "+"
+	OpMul   Op = "x"
+	OpPow   Op = "**"
+	OpReLU  Op = "relu"
+	OpConst Op = "const"
+)
+
+type Value struct {
+	Data     float64
+	Op       Op
+	Parents  []*Value
+	Grad     float64
+	backward func()
+}
+
+func New(data float64, op Op, parents []*Value) *Value {
+	result := &Value{Data: data, Op: op, Parents: parents}
+	return result
+}
+
+func Const(data float64) *Value {
+	return New(data, OpConst, []*Value{})
+}
+
+func (this *Value) Backward() {
+	topo := []*Value{}
+	visited := map[*Value]bool{}
+
+	var buildTopo func(v *Value)
+	buildTopo = func(v *Value) {
+		if !visited[v] {
+			visited[v] = true
+			for _, parent := range v.Parents {
+				buildTopo(parent)
+			}
+			topo = append(topo, v)
+		}
+	}
+
+	buildTopo(this)
+
+	// reset gradient - is this correct?
+	for _, v := range topo {
+		v.Grad = 0
+	}
+
+	// set gradient of this to 1
+	this.Grad = 1
+
+	// apply chain rule
+	for i := len(topo) - 1; i >= 0; i-- {
+		topo[i].backward()
+		fmt.Printf("topo[%d] = %v, op = %v, grad = %v \n", i, topo[i].Data, topo[i].Op, topo[i].Grad)
+	}
+}
+
+func Add(vs ...*Value) *Value {
+	result := 0.0
+	for _, v := range vs {
+		result += v.Data
+	}
+
+	out := New(result, OpAdd, vs)
+
+	out.backward = func() {
+		for _, v := range vs {
+			v.Grad += 1 * out.Grad
+		}
+	}
+
+	return out
+}
+
+func Mul(vs ...*Value) *Value {
+	result := 1.0
+	for _, v := range vs {
+		result *= v.Data
+	}
+
+	out := New(result, OpMul, vs)
+
+	out.backward = func() {
+		for _, v := range vs {
+			v.Grad += (result / v.Data) * out.Grad
+		}
+	}
+
+	return out
+}
+
+func Pow(a *Value, b float64) *Value {
+	result := math.Pow(a.Data, b)
+	out := New(result, OpPow, []*Value{a})
+
+	out.backward = func() {
+		a.Grad += b * math.Pow(a.Data, b-1) * out.Grad
+	}
+
+	return out
+}
+
+func Div(a, b *Value) *Value {
+	return Mul(a, Pow(b, -1))
+}
+
+func Neg(a *Value) *Value {
+	return Mul(a, New(-1, OpConst, []*Value{}))
+}
+
+func ReLU(a *Value) *Value {
+	var result float64
+	if a.Data > 0 {
+		result = a.Data
+	}
+
+	out := New(result, OpReLU, []*Value{a})
+	out.backward = func() {
+		if a.Data > 0 {
+			a.Grad += 1 * out.Grad
+		}
+	}
+
+	return out
+}
