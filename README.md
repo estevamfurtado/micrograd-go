@@ -1,6 +1,6 @@
 # micrograd-go
 
-A Go reimplementation of Andrej Karpathy's [micrograd](https://github.com/karpathy/micrograd) — a learning project to build autograd, backpropagation, and neural networks from scratch.
+A Go reimplementation of Andrej Karpathy's [micrograd](https://github.com/karpathy/micrograd).
 
 ## References
 
@@ -33,7 +33,7 @@ go run ./examples/moons/
 
 Run from the **repo root** — paths like `examples/moons/moons.jsonl` are relative to the working directory.
 
-The moons example loads the committed JSONL file and trains a `2 → 16 → 16 → 1` MLP with hinge loss, L2 regularization, and SGD with learning-rate decay. It prints loss and accuracy per step.
+The moons example loads the committed JSONL file, trains a `2 → 16 → 16 → 1` MLP, and saves a decision boundary plot to `examples/moons/decision_boundary.png`.
 
 To regenerate the dataset and scatter plot (`moons.png`), call `GenerateDataset(100, 0.1)` from `examples/moons/dataset.go` (not wired into `main` by default).
 
@@ -44,12 +44,13 @@ To regenerate the dataset and scatter plot (`moons.png`), call `GenerateDataset(
 - **examples/moons** — `MakeMoons`, JSONL I/O, training loop (hinge loss, L2 reg, decaying LR)
 - **tests** — engine ops/backward, moons JSONL round-trip
 
-## Not yet implemented
+## From the author
 
-- Decision boundary plot
-- Gradient checking (finite differences)
-- `Tanh` activation
-- `Module` base type from the original micrograd API
+Why not Python? 
+1. I started the learning over Python, but honestly, its hard not to copypaste when you are writing in the original lang.
+2. I like Go. Typechecks, ergonomics, etc.
+
+Along the way, [Cursor](https://cursor.com) agents helped with the boring stuff — debugging `make`+`append` slice crimes, translating `plt.contourf` into gonum heatmaps. The autograd, the training loop, and the questionable choices were mine.
 
 ## License
 

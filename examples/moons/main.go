@@ -19,4 +19,6 @@ func main() {
 	batch_size := len(data)
 	trainer := NewTrainer(model, lr, epochs, batch_size)
 	trainer.Train(data)
+
+	plotDecisionBoundaryOrExit(model, data)
 }
