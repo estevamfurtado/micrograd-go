@@ -9,8 +9,6 @@ import (
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
-
-	"github.com/estevamfurtado/micrograd-go/datasets"
 )
 
 // Default values:
@@ -18,10 +16,10 @@ import (
 // noise = 0.1
 func GenerateDataset(nSamples int, noise float64) {
 	rng := rand.New(rand.NewSource(1337))
-	data := datasets.MakeMoons(nSamples, noise, rng)
+	data := MakeMoons(nSamples, noise, rng)
 
 	jsonlPath := "examples/moons/moons.jsonl"
-	if err := datasets.WriteJSONL(jsonlPath, data); err != nil {
+	if err := WriteJSONL(jsonlPath, data); err != nil {
 		fmt.Fprintf(os.Stderr, "jsonl export: %v\n", err)
 		os.Exit(1)
 	}
@@ -70,9 +68,9 @@ func GenerateDataset(nSamples int, noise float64) {
 	fmt.Printf("labels: y in {-1, +1} — same as y = y*2 - 1 in Python\n")
 }
 
-func loadMoons() []datasets.Sample {
+func loadMoons() Samples {
 	jsonlPath := "examples/moons/moons.jsonl"
-	data, err := datasets.ReadJSONL(jsonlPath)
+	data, err := ReadJSONL(jsonlPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "jsonl load: %v\n", err)
 		os.Exit(1)

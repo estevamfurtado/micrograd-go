@@ -9,16 +9,16 @@ A Go reimplementation of Andrej Karpathy's [micrograd](https://github.com/karpat
 
 ## What is micrograd?
 
-A scalar autograd engine (~100 lines) plus a minimal neural network library (~50 lines) with a PyTorch-like API. Every operation is a scalar; the computation graph is built dynamically and gradients flow via reverse-mode backpropagation.
+A scalar autograd engine plus a minimal neural network library with a PyTorch-like API. Every operation is a scalar; the computation graph is built dynamically and gradients flow via reverse-mode backpropagation.
 
 ## Project structure
 
 ```
 micrograd-go/
-├── engine/          # autograd — port of engine.py (Value, ops, backward)
-├── nn/              # neural nets — port of nn.py (Neuron, Layer, MLP)
-├── datasets/        # toy datasets (make_moons, JSONL I/O)
-└── examples/moons/  # train an MLP on the moons dataset (demo.ipynb equivalent)
+├── engine/              # autograd — port of engine.py (Value, ops, backward)
+├── nn/                  # neural nets — port of nn.py (Neuron, Layer, MLP)
+└── examples/moons/      # moons demo (MakeMoons, JSONL, train, plot)
+    └── moons.jsonl      # committed dataset (100 samples, seed 1337)
 ```
 
 ## Quick start
@@ -27,24 +27,29 @@ micrograd-go/
 go build ./...
 go test ./...
 
-# generate dataset, export JSONL, plot points, and train the MLP
+# load moons.jsonl and train the MLP (100 epochs, full batch)
 go run ./examples/moons/
 ```
 
-Run from the repo root so paths like `examples/moons/moons.jsonl` resolve correctly.
+Run from the **repo root** — paths like `examples/moons/moons.jsonl` are relative to the working directory.
+
+The moons example loads the committed JSONL file and trains a `2 → 16 → 16 → 1` MLP with hinge loss, L2 regularization, and SGD with learning-rate decay. It prints loss and accuracy per step.
+
+To regenerate the dataset and scatter plot (`moons.png`), call `GenerateDataset(100, 0.1)` from `examples/moons/dataset.go` (not wired into `main` by default).
 
 ## What's implemented
 
 - **engine** — `Value`, `Add`, `Mul`, `Pow`, `Div`, `Neg`, `ReLU`, `Backward()`
 - **nn** — `Neuron`, `Layer`, `MLP` with ReLU hidden layers and a linear output layer
-- **datasets** — `make_moons`, JSONL read/write
-- **examples/moons** — hinge loss, L2 regularization, SGD with learning-rate decay
+- **examples/moons** — `MakeMoons`, JSONL I/O, training loop (hinge loss, L2 reg, decaying LR)
+- **tests** — engine ops/backward, moons JSONL round-trip
 
-## Roadmap
+## Not yet implemented
 
-- [ ] decision boundary plot
-- [ ] gradient checking with finite differences
-- [ ] `Tanh` activation (optional)
+- Decision boundary plot
+- Gradient checking (finite differences)
+- `Tanh` activation
+- `Module` base type from the original micrograd API
 
 ## License
 

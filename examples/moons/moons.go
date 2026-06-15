@@ -1,4 +1,4 @@
-package datasets
+package main
 
 import (
 	"math"

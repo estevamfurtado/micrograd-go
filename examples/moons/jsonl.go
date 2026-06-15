@@ -1,4 +1,4 @@
-package datasets
+package main
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 )
 
 // WriteJSONL writes one JSON object per line: {"x":[x0,x1],"y":label}.
-func WriteJSONL(path string, samples []Sample) error {
+func WriteJSONL(path string, samples Samples) error {
 	f, err := os.Create(path)
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func ReadJSONL(path string) (Samples, error) {
 	defer f.Close()
 
 	dec := json.NewDecoder(f)
-	samples := []Sample{}
+	samples := Samples{}
 
 	for {
 		var s Sample

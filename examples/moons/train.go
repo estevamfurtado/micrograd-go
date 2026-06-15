@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/estevamfurtado/micrograd-go/datasets"
 	"github.com/estevamfurtado/micrograd-go/engine"
 	"github.com/estevamfurtado/micrograd-go/nn"
 )
@@ -34,7 +33,7 @@ func (t *Trainer) zeroGrad() {
 	}
 }
 
-func (t *Trainer) Train(data datasets.Samples) {
+func (t *Trainer) Train(data Samples) {
 	rng := rand.New(rand.NewSource(1337))
 
 	step := 1
@@ -62,7 +61,7 @@ func (t *Trainer) Train(data datasets.Samples) {
 	}
 }
 
-func (t *Trainer) loss(batch_data []datasets.Sample) (*engine.Value, float64) {
+func (t *Trainer) loss(batch_data []Sample) (*engine.Value, float64) {
 	score := 0
 
 	// Data Loss
