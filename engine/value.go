@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -24,12 +23,13 @@ type Value struct {
 }
 
 func New(data float64, op Op, parents []*Value) *Value {
-	result := &Value{Data: data, Op: op, Parents: parents}
+	result := &Value{Data: data, Op: op, Parents: parents, backward: func() {}}
 	return result
 }
 
 func Const(data float64) *Value {
-	return New(data, OpConst, []*Value{})
+	out := New(data, OpConst, []*Value{})
+	return out
 }
 
 func (this *Value) Backward() {
@@ -57,10 +57,11 @@ func (this *Value) Backward() {
 	// set gradient of this to 1
 	this.Grad = 1
 
-	// apply chain rule
+	// apply chain rule (leaves may have nil backward)
 	for i := len(topo) - 1; i >= 0; i-- {
-		topo[i].backward()
-		fmt.Printf("topo[%d] = %v, op = %v, grad = %v \n", i, topo[i].Data, topo[i].Op, topo[i].Grad)
+		if topo[i].backward != nil {
+			topo[i].backward()
+		}
 	}
 }
 
@@ -114,7 +115,7 @@ func Div(a, b *Value) *Value {
 }
 
 func Neg(a *Value) *Value {
-	return Mul(a, New(-1, OpConst, []*Value{}))
+	return Mul(a, Const(-1))
 }
 
 func ReLU(a *Value) *Value {

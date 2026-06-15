@@ -50,16 +50,34 @@ func TestValue_Backward(t *testing.T) {
 	// n1
 	w11, w12, b1 := Const(0.1), Const(0.2), Const(0.3)
 	n1 := ReLU(Add(Mul(i1, w11), Mul(i2, w12), b1))
-	assert.Equal(t, n1.Data, 1.1)
+	assert.Equal(t, 1.1, n1.Data) // ReLU[ w11 * i1 + w12 * i2 + b1 ]
 
 	// n2
 	w21, w22, b2 := Const(-0.1), Const(0.2), Const(0.3)
-	n2 := ReLU(Add(Mul(i1, w21), Mul(i2, w22), b2))
-	assert.Equal(t, n2.Data, 0.3)
+	n2 := ReLU(Add(Mul(i1, w21), Mul(i2, w22), b2)) // Relu[ w21 * i1 + w22 * i2 + b2 ]
+	assert.Equal(t, 0.3, n2.Data)
 
 	// combine n1 and n2
-	o3 := Add(n1, n2)
-	assert.Equal(t, float32(o3.Data), float32(1.4)) // precision issues
+	out := Add(n1, Mul(n2, Const(2.0)))              // n1 + 2 * n2
+	assert.Equal(t, float32(1.7), float32(out.Data)) // precision issues
 
-	o3.Backward()
+	out.Backward()
+	// assert gradients
+	assert.Equal(t, out.Grad, 1.0)
+	assert.Equal(t, n1.Grad, out.Grad*1.0)
+	assert.Equal(t, n2.Grad, out.Grad*2.0)
+
+	// n1
+	assert.Equal(t, b1.Grad, n1.Grad)
+	assert.Equal(t, w11.Grad, n1.Grad*i1.Data)
+	assert.Equal(t, w12.Grad, n1.Grad*i2.Data)
+
+	// n2
+	assert.Equal(t, b2.Grad, n2.Grad)
+	assert.Equal(t, w21.Grad, i1.Data*n2.Grad)
+	assert.Equal(t, w22.Grad, i2.Data*n2.Grad)
+
+	// inputs — ∂out/∂i1 = w11·∂out/∂n1 + w21·∂out/∂n2
+	assert.Equal(t, w11.Data*n1.Grad+w21.Data*n2.Grad, i1.Grad)
+	assert.Equal(t, w12.Data*n1.Grad+w22.Data*n2.Grad, i2.Grad)
 }
