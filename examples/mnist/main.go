@@ -18,11 +18,11 @@ type Config struct {
 }
 
 var config = Config{
-	Limit:     60000,
-	TestLimit: 10000,
-	Epochs:    100,
-	BatchSize: 64,
-	LR:        0.05,
+	Limit:     60_000,
+	TestLimit: 10_000,
+	Epochs:    10,
+	BatchSize: 32,
+	LR:        0.02,
 }
 
 func main() {
@@ -47,7 +47,7 @@ func main() {
 
 	fmt.Printf("train: %d samples, test: %d samples\n", len(train), len(test))
 
-	model := nn.NewMLP(numPixels, []int{128, numClasses})
+	model := nn.NewMLP(numPixels, []int{16, numClasses})
 	fmt.Printf("model: %d parameters\n", len(model.Parameters()))
 
 	loss := &CrossEntropyCalculator{}

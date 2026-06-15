@@ -76,12 +76,11 @@ func (t *Trainer) Train(data Samples) {
 			}
 		}
 
-		testAccuracy := t.Accuracy(t.testData)
-		fmt.Printf("epoch %d: test accuracy: %.1f%%\n", epoch, testAccuracy*100)
+		testAccuracy = t.Accuracy(t.testData)
+		trainAccuracy := t.Accuracy(data)
+		fmt.Printf("test: %.1f%%, train: %.1f%%\n", testAccuracy*100, trainAccuracy*100)
 	}
 
-	fmt.Printf("final test accuracy: %.1f%%\n", testAccuracy*100)
-	fmt.Printf("final train accuracy: %.1f%%\n", t.Accuracy(data)*100)
 }
 
 func (t *Trainer) loss(batchData []Sample) (*engine.Value, float64) {

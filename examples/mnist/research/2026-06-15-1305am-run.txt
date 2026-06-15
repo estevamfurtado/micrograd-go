@@ -1,0 +1,336 @@
+var config = Config{
+        Limit:     60_000,
+        TestLimit: 10_000,
+        Epochs:    10,
+        BatchSize: 32,
+        LR:        0.02,
+}
+
+model := nn.NewMLP(numPixels, []int{16, numClasses})
+
+estevamfurtado@Estevams-MacBook-Pro micrograd-go % go run ./examples/mnist/
+
+estevamfurtado@Estevams-MacBook-Pro micrograd-go % go run ./examples/mnist/
+train: 60000 samples, test: 10000 samples
+model: 12730 parameters
+initial test accuracy: 7.9%
+epoch 0/10: learning rate 0.020
+        batch 0/1875: loss 10.90, accuracy 12.5%
+        batch 50/1875: loss 4.01, accuracy 37.5%
+        batch 100/1875: loss 2.65, accuracy 37.5%
+        batch 150/1875: loss 3.40, accuracy 9.4%
+        batch 200/1875: loss 2.85, accuracy 31.2%
+        batch 250/1875: loss 2.69, accuracy 31.2%
+        batch 300/1875: loss 1.84, accuracy 53.1%
+        batch 350/1875: loss 1.98, accuracy 53.1%
+        batch 400/1875: loss 2.01, accuracy 53.1%
+        batch 450/1875: loss 1.88, accuracy 59.4%
+        batch 500/1875: loss 1.86, accuracy 68.8%
+        batch 550/1875: loss 1.63, accuracy 59.4%
+        batch 600/1875: loss 1.74, accuracy 62.5%
+        batch 650/1875: loss 1.62, accuracy 56.2%
+        batch 700/1875: loss 1.24, accuracy 75.0%
+        batch 750/1875: loss 1.85, accuracy 59.4%
+        batch 800/1875: loss 1.35, accuracy 59.4%
+        batch 850/1875: loss 1.07, accuracy 75.0%
+        batch 900/1875: loss 1.48, accuracy 65.6%
+        batch 950/1875: loss 1.36, accuracy 62.5%
+        batch 1000/1875: loss 1.80, accuracy 68.8%
+        batch 1050/1875: loss 1.71, accuracy 59.4%
+        batch 1100/1875: loss 1.00, accuracy 87.5%
+        batch 1150/1875: loss 1.30, accuracy 71.9%
+        batch 1200/1875: loss 1.03, accuracy 87.5%
+        batch 1250/1875: loss 1.57, accuracy 56.2%
+        batch 1300/1875: loss 1.28, accuracy 71.9%
+        batch 1350/1875: loss 1.42, accuracy 65.6%
+        batch 1400/1875: loss 0.96, accuracy 78.1%
+        batch 1450/1875: loss 1.73, accuracy 65.6%
+        batch 1500/1875: loss 0.96, accuracy 81.2%
+        batch 1550/1875: loss 1.19, accuracy 68.8%
+        batch 1600/1875: loss 1.16, accuracy 75.0%
+        batch 1650/1875: loss 1.11, accuracy 71.9%
+        batch 1700/1875: loss 1.31, accuracy 68.8%
+        batch 1750/1875: loss 1.60, accuracy 65.6%
+        batch 1800/1875: loss 1.24, accuracy 81.2%
+        batch 1850/1875: loss 1.26, accuracy 71.9%
+test: 76.1%, train: 75.6%
+epoch 1/10: learning rate 0.018
+        batch 0/1875: loss 1.49, accuracy 68.8%
+        batch 50/1875: loss 1.11, accuracy 78.1%
+        batch 100/1875: loss 1.18, accuracy 75.0%
+        batch 150/1875: loss 0.98, accuracy 71.9%
+        batch 200/1875: loss 1.00, accuracy 84.4%
+        batch 250/1875: loss 0.86, accuracy 84.4%
+        batch 300/1875: loss 1.14, accuracy 78.1%
+        batch 350/1875: loss 0.75, accuracy 87.5%
+        batch 400/1875: loss 1.37, accuracy 65.6%
+        batch 450/1875: loss 1.49, accuracy 75.0%
+        batch 500/1875: loss 1.00, accuracy 81.2%
+        batch 550/1875: loss 1.02, accuracy 68.8%
+        batch 600/1875: loss 1.09, accuracy 71.9%
+        batch 650/1875: loss 1.11, accuracy 81.2%
+        batch 700/1875: loss 1.28, accuracy 71.9%
+        batch 750/1875: loss 1.40, accuracy 56.2%
+        batch 800/1875: loss 1.24, accuracy 78.1%
+        batch 850/1875: loss 1.09, accuracy 71.9%
+        batch 900/1875: loss 0.72, accuracy 87.5%
+        batch 950/1875: loss 1.45, accuracy 65.6%
+        batch 1000/1875: loss 2.04, accuracy 62.5%
+        batch 1050/1875: loss 0.79, accuracy 84.4%
+        batch 1100/1875: loss 0.68, accuracy 90.6%
+        batch 1150/1875: loss 0.92, accuracy 84.4%
+        batch 1200/1875: loss 0.98, accuracy 78.1%
+        batch 1250/1875: loss 0.98, accuracy 84.4%
+        batch 1300/1875: loss 1.00, accuracy 75.0%
+        batch 1350/1875: loss 1.39, accuracy 75.0%
+        batch 1400/1875: loss 0.67, accuracy 96.9%
+        batch 1450/1875: loss 1.33, accuracy 68.8%
+        batch 1500/1875: loss 0.76, accuracy 87.5%
+        batch 1550/1875: loss 1.22, accuracy 81.2%
+        batch 1600/1875: loss 0.90, accuracy 78.1%
+        batch 1650/1875: loss 1.00, accuracy 75.0%
+        batch 1700/1875: loss 1.14, accuracy 75.0%
+        batch 1750/1875: loss 0.82, accuracy 78.1%
+        batch 1800/1875: loss 1.07, accuracy 75.0%
+        batch 1850/1875: loss 0.97, accuracy 75.0%
+test: 81.9%, train: 81.1%
+epoch 2/10: learning rate 0.016
+        batch 0/1875: loss 1.09, accuracy 81.2%
+        batch 50/1875: loss 1.06, accuracy 78.1%
+        batch 100/1875: loss 1.01, accuracy 84.4%
+        batch 150/1875: loss 1.41, accuracy 81.2%
+        batch 200/1875: loss 1.03, accuracy 81.2%
+        batch 250/1875: loss 0.75, accuracy 87.5%
+        batch 300/1875: loss 1.01, accuracy 81.2%
+        batch 350/1875: loss 1.01, accuracy 78.1%
+        batch 400/1875: loss 0.95, accuracy 78.1%
+        batch 450/1875: loss 0.86, accuracy 93.8%
+        batch 500/1875: loss 1.17, accuracy 78.1%
+        batch 550/1875: loss 0.76, accuracy 93.8%
+        batch 600/1875: loss 1.06, accuracy 75.0%
+        batch 650/1875: loss 0.86, accuracy 84.4%
+        batch 700/1875: loss 0.88, accuracy 84.4%
+        batch 750/1875: loss 1.30, accuracy 75.0%
+        batch 800/1875: loss 0.83, accuracy 87.5%
+        batch 850/1875: loss 1.36, accuracy 78.1%
+        batch 900/1875: loss 0.62, accuracy 93.8%
+        batch 950/1875: loss 0.88, accuracy 84.4%
+        batch 1000/1875: loss 1.17, accuracy 75.0%
+        batch 1050/1875: loss 0.86, accuracy 84.4%
+        batch 1100/1875: loss 0.76, accuracy 93.8%
+        batch 1150/1875: loss 0.92, accuracy 84.4%
+        batch 1200/1875: loss 0.96, accuracy 84.4%
+        batch 1250/1875: loss 0.74, accuracy 93.8%
+        batch 1300/1875: loss 0.86, accuracy 87.5%
+        batch 1350/1875: loss 1.05, accuracy 84.4%
+        batch 1400/1875: loss 0.89, accuracy 81.2%
+        batch 1450/1875: loss 0.87, accuracy 81.2%
+        batch 1500/1875: loss 0.99, accuracy 78.1%
+        batch 1550/1875: loss 0.63, accuracy 93.8%
+        batch 1600/1875: loss 1.24, accuracy 71.9%
+        batch 1650/1875: loss 1.19, accuracy 90.6%
+        batch 1700/1875: loss 0.74, accuracy 84.4%
+        batch 1750/1875: loss 1.19, accuracy 81.2%
+        batch 1800/1875: loss 0.85, accuracy 93.8%
+        batch 1850/1875: loss 1.12, accuracy 81.2%
+test: 84.0%, train: 83.8%
+epoch 3/10: learning rate 0.015
+        batch 0/1875: loss 0.79, accuracy 84.4%
+        batch 50/1875: loss 0.88, accuracy 84.4%
+        batch 100/1875: loss 0.90, accuracy 87.5%
+        batch 150/1875: loss 0.82, accuracy 90.6%
+        batch 200/1875: loss 1.13, accuracy 84.4%
+        batch 250/1875: loss 0.63, accuracy 96.9%
+        batch 300/1875: loss 1.00, accuracy 71.9%
+        batch 350/1875: loss 0.71, accuracy 84.4%
+        batch 400/1875: loss 1.30, accuracy 75.0%
+        batch 450/1875: loss 0.91, accuracy 87.5%
+        batch 500/1875: loss 0.90, accuracy 78.1%
+        batch 550/1875: loss 0.80, accuracy 81.2%
+        batch 600/1875: loss 0.61, accuracy 93.8%
+        batch 650/1875: loss 0.79, accuracy 87.5%
+        batch 700/1875: loss 0.67, accuracy 90.6%
+        batch 750/1875: loss 0.87, accuracy 84.4%
+        batch 800/1875: loss 1.24, accuracy 84.4%
+        batch 850/1875: loss 1.25, accuracy 87.5%
+        batch 900/1875: loss 0.90, accuracy 87.5%
+        batch 950/1875: loss 0.82, accuracy 87.5%
+        batch 1000/1875: loss 0.71, accuracy 93.8%
+        batch 1050/1875: loss 1.06, accuracy 71.9%
+        batch 1100/1875: loss 1.19, accuracy 84.4%
+        batch 1150/1875: loss 1.03, accuracy 81.2%
+        batch 1200/1875: loss 1.11, accuracy 87.5%
+        batch 1250/1875: loss 1.00, accuracy 84.4%
+        batch 1300/1875: loss 0.73, accuracy 87.5%
+        batch 1350/1875: loss 0.80, accuracy 84.4%
+        batch 1400/1875: loss 0.89, accuracy 84.4%
+        batch 1450/1875: loss 0.80, accuracy 87.5%
+        batch 1500/1875: loss 0.84, accuracy 90.6%
+        batch 1550/1875: loss 1.15, accuracy 81.2%
+        batch 1600/1875: loss 0.91, accuracy 75.0%
+        batch 1650/1875: loss 0.57, accuracy 93.8%
+        batch 1700/1875: loss 0.72, accuracy 87.5%
+        batch 1750/1875: loss 1.08, accuracy 81.2%
+        batch 1800/1875: loss 0.90, accuracy 81.2%
+        batch 1850/1875: loss 0.65, accuracy 93.8%
+test: 85.2%, train: 85.2%
+epoch 4/10: learning rate 0.013
+        batch 0/1875: loss 0.93, accuracy 81.2%
+        batch 50/1875: loss 0.89, accuracy 84.4%
+        batch 100/1875: loss 1.26, accuracy 81.2%
+        batch 150/1875: loss 0.69, accuracy 87.5%
+        batch 200/1875: loss 1.12, accuracy 81.2%
+        batch 250/1875: loss 1.05, accuracy 81.2%
+        batch 300/1875: loss 0.91, accuracy 87.5%
+        batch 350/1875: loss 0.84, accuracy 84.4%
+        batch 400/1875: loss 0.72, accuracy 93.8%
+        batch 450/1875: loss 0.67, accuracy 90.6%
+        batch 500/1875: loss 0.86, accuracy 84.4%
+        batch 550/1875: loss 0.82, accuracy 87.5%
+        batch 600/1875: loss 0.65, accuracy 93.8%
+        batch 650/1875: loss 1.03, accuracy 78.1%
+        batch 700/1875: loss 0.90, accuracy 81.2%
+        batch 750/1875: loss 1.09, accuracy 84.4%
+        batch 800/1875: loss 0.98, accuracy 87.5%
+        batch 850/1875: loss 0.61, accuracy 90.6%
+        batch 900/1875: loss 0.86, accuracy 84.4%
+        batch 950/1875: loss 0.61, accuracy 96.9%
+        batch 1000/1875: loss 0.60, accuracy 93.8%
+        batch 1050/1875: loss 0.91, accuracy 81.2%
+        batch 1100/1875: loss 1.44, accuracy 75.0%
+        batch 1150/1875: loss 0.84, accuracy 87.5%
+        batch 1200/1875: loss 0.93, accuracy 81.2%
+        batch 1250/1875: loss 0.77, accuracy 84.4%
+        batch 1300/1875: loss 1.11, accuracy 75.0%
+        batch 1350/1875: loss 1.23, accuracy 78.1%
+        batch 1400/1875: loss 0.68, accuracy 90.6%
+        batch 1450/1875: loss 1.18, accuracy 81.2%
+        batch 1500/1875: loss 0.79, accuracy 93.8%
+        batch 1550/1875: loss 0.72, accuracy 90.6%
+        batch 1600/1875: loss 0.69, accuracy 87.5%
+        batch 1650/1875: loss 0.86, accuracy 93.8%
+        batch 1700/1875: loss 1.03, accuracy 87.5%
+        batch 1750/1875: loss 0.98, accuracy 87.5%
+        batch 1800/1875: loss 1.19, accuracy 81.2%
+        batch 1850/1875: loss 0.90, accuracy 84.4%
+test: 86.7%, train: 86.3%
+epoch 5/10: learning rate 0.011
+        batch 0/1875: loss 0.79, accuracy 90.6%
+        batch 50/1875: loss 1.24, accuracy 78.1%
+        batch 100/1875: loss 0.77, accuracy 81.2%
+        batch 150/1875: loss 0.71, accuracy 90.6%
+        batch 200/1875: loss 0.93, accuracy 81.2%
+        batch 250/1875: loss 1.06, accuracy 78.1%
+        batch 300/1875: loss 0.95, accuracy 87.5%
+        batch 350/1875: loss 0.89, accuracy 84.4%
+        batch 400/1875: loss 1.13, accuracy 75.0%
+        batch 450/1875: loss 0.99, accuracy 81.2%
+        batch 500/1875: loss 1.21, accuracy 81.2%
+        batch 550/1875: loss 0.91, accuracy 81.2%
+        batch 600/1875: loss 0.70, accuracy 90.6%
+        batch 650/1875: loss 0.90, accuracy 87.5%
+        batch 700/1875: loss 1.07, accuracy 81.2%
+        batch 750/1875: loss 0.83, accuracy 90.6%
+        batch 800/1875: loss 0.63, accuracy 93.8%
+        batch 850/1875: loss 1.00, accuracy 81.2%
+        batch 900/1875: loss 0.65, accuracy 93.8%
+        batch 950/1875: loss 0.76, accuracy 90.6%
+        batch 1000/1875: loss 0.57, accuracy 96.9%
+        batch 1050/1875: loss 0.59, accuracy 90.6%
+        batch 1100/1875: loss 0.76, accuracy 90.6%
+        batch 1150/1875: loss 0.87, accuracy 84.4%
+        batch 1200/1875: loss 1.18, accuracy 84.4%
+        batch 1250/1875: loss 1.11, accuracy 75.0%
+        batch 1300/1875: loss 1.04, accuracy 81.2%
+        batch 1350/1875: loss 0.95, accuracy 87.5%
+        batch 1400/1875: loss 0.76, accuracy 90.6%
+        batch 1450/1875: loss 0.65, accuracy 90.6%
+        batch 1500/1875: loss 0.98, accuracy 81.2%
+        batch 1550/1875: loss 0.72, accuracy 84.4%
+        batch 1600/1875: loss 0.93, accuracy 75.0%
+        batch 1650/1875: loss 1.12, accuracy 71.9%
+        batch 1700/1875: loss 1.00, accuracy 81.2%
+        batch 1750/1875: loss 1.17, accuracy 84.4%
+        batch 1800/1875: loss 0.52, accuracy 96.9%
+        batch 1850/1875: loss 0.93, accuracy 87.5%
+test: 86.9%, train: 87.0%
+epoch 6/10: learning rate 0.009
+        batch 0/1875: loss 0.76, accuracy 87.5%
+        batch 50/1875: loss 0.75, accuracy 90.6%
+        batch 100/1875: loss 0.67, accuracy 93.8%
+        batch 150/1875: loss 1.48, accuracy 68.8%
+        batch 200/1875: loss 0.96, accuracy 87.5%
+        batch 250/1875: loss 0.65, accuracy 93.8%
+        batch 300/1875: loss 0.91, accuracy 81.2%
+        batch 350/1875: loss 0.65, accuracy 93.8%
+        batch 400/1875: loss 0.65, accuracy 93.8%
+        batch 450/1875: loss 0.83, accuracy 84.4%
+        batch 500/1875: loss 0.95, accuracy 78.1%
+        batch 550/1875: loss 0.61, accuracy 93.8%
+        batch 600/1875: loss 0.84, accuracy 78.1%
+        batch 650/1875: loss 0.68, accuracy 90.6%
+        batch 700/1875: loss 0.89, accuracy 93.8%
+        batch 750/1875: loss 0.56, accuracy 93.8%
+        batch 800/1875: loss 1.05, accuracy 84.4%
+        batch 850/1875: loss 0.73, accuracy 93.8%
+        batch 900/1875: loss 1.24, accuracy 68.8%
+        batch 950/1875: loss 0.62, accuracy 90.6%
+        batch 1000/1875: loss 0.67, accuracy 96.9%
+        batch 1050/1875: loss 0.58, accuracy 93.8%
+        batch 1100/1875: loss 0.92, accuracy 90.6%
+        batch 1150/1875: loss 0.83, accuracy 90.6%
+        batch 1200/1875: loss 0.80, accuracy 81.2%
+        batch 1250/1875: loss 0.75, accuracy 81.2%
+        batch 1300/1875: loss 1.19, accuracy 71.9%
+        batch 1350/1875: loss 0.79, accuracy 84.4%
+        batch 1400/1875: loss 0.85, accuracy 84.4%
+        batch 1450/1875: loss 0.55, accuracy 96.9%
+        batch 1500/1875: loss 0.75, accuracy 81.2%
+        batch 1550/1875: loss 0.73, accuracy 81.2%
+        batch 1600/1875: loss 0.48, accuracy 96.9%
+        batch 1650/1875: loss 0.95, accuracy 87.5%
+        batch 1700/1875: loss 0.98, accuracy 84.4%
+        batch 1750/1875: loss 0.85, accuracy 90.6%
+        batch 1800/1875: loss 0.76, accuracy 84.4%
+        batch 1850/1875: loss 0.79, accuracy 87.5%
+test: 87.4%, train: 87.4%
+epoch 7/10: learning rate 0.007
+        batch 0/1875: loss 0.87, accuracy 87.5%
+        batch 50/1875: loss 0.88, accuracy 84.4%
+        batch 100/1875: loss 0.71, accuracy 90.6%
+        batch 150/1875: loss 0.65, accuracy 87.5%
+        batch 200/1875: loss 0.85, accuracy 84.4%
+        batch 250/1875: loss 0.90, accuracy 81.2%
+        batch 300/1875: loss 0.61, accuracy 93.8%
+        batch 350/1875: loss 0.97, accuracy 84.4%
+        batch 400/1875: loss 0.79, accuracy 87.5%
+        batch 450/1875: loss 0.65, accuracy 90.6%
+        batch 500/1875: loss 0.63, accuracy 93.8%
+        batch 550/1875: loss 0.71, accuracy 90.6%
+        batch 600/1875: loss 0.59, accuracy 93.8%
+        batch 650/1875: loss 0.99, accuracy 84.4%
+        batch 700/1875: loss 0.94, accuracy 84.4%
+        batch 750/1875: loss 0.59, accuracy 96.9%
+        batch 800/1875: loss 0.70, accuracy 87.5%
+        batch 850/1875: loss 1.15, accuracy 81.2%
+        batch 900/1875: loss 0.92, accuracy 81.2%
+        batch 950/1875: loss 1.16, accuracy 78.1%
+        batch 1000/1875: loss 0.80, accuracy 87.5%
+        batch 1050/1875: loss 0.72, accuracy 84.4%
+        batch 1100/1875: loss 1.02, accuracy 78.1%
+        batch 1150/1875: loss 0.70, accuracy 84.4%
+        batch 1200/1875: loss 1.28, accuracy 71.9%
+        batch 1250/1875: loss 1.32, accuracy 78.1%
+        batch 1300/1875: loss 0.81, accuracy 87.5%
+        batch 1350/1875: loss 0.69, accuracy 78.1%
+        batch 1400/1875: loss 0.68, accuracy 90.6%
+        batch 1450/1875: loss 0.99, accuracy 81.2%
+        batch 1500/1875: loss 0.63, accuracy 90.6%
+        batch 1550/1875: loss 0.64, accuracy 87.5%
+        batch 1600/1875: loss 0.61, accuracy 90.6%
+        batch 1650/1875: loss 0.50, accuracy 96.9%
+        batch 1700/1875: loss 0.71, accuracy 90.6%
+        batch 1750/1875: loss 0.74, accuracy 90.6%
+        batch 1800/1875: loss 0.68, accuracy 90.6%
+        batch 1850/1875: loss 0.74, accuracy 90.6%
+^Csignal: interrupt
