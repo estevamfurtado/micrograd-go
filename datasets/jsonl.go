@@ -2,6 +2,7 @@ package datasets
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 )
 
@@ -20,4 +21,30 @@ func WriteJSONL(path string, samples []Sample) error {
 		}
 	}
 	return nil
+}
+
+// ReadJSONL reads one JSON object per line into samples.
+func ReadJSONL(path string) (Samples, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	dec := json.NewDecoder(f)
+	samples := []Sample{}
+
+	for {
+		var s Sample
+		err := dec.Decode(&s)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		samples = append(samples, s)
+	}
+
+	return samples, nil
 }

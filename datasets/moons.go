@@ -11,10 +11,12 @@ type Sample struct {
 	Y float64    `json:"y"` // -1 or +1
 }
 
+type Samples []Sample
+
 // MakeMoons generates the same toy dataset as sklearn.datasets.make_moons.
-func MakeMoons(nSamples int, noise float64, rng *rand.Rand) []Sample {
+func MakeMoons(nSamples int, noise float64, rng *rand.Rand) Samples {
 	half := nSamples / 2
-	samples := make([]Sample, nSamples)
+	samples := make(Samples, nSamples)
 
 	for i := 0; i < half; i++ {
 		t := math.Pi * float64(i) / float64(half-1)
@@ -29,4 +31,11 @@ func MakeMoons(nSamples int, noise float64, rng *rand.Rand) []Sample {
 	}
 
 	return samples
+}
+
+func (s Samples) Shuffle() {
+	rng := rand.New(rand.NewSource(1337))
+	rng.Shuffle(len(s), func(i, j int) {
+		s[i], s[j] = s[j], s[i]
+	})
 }

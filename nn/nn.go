@@ -73,6 +73,10 @@ func NewLayer(in, out int, nonlin bool) *Layer {
 }
 
 func (l *Layer) Calculate(inputs []*engine.Value) []*engine.Value {
+	if len(inputs) != len(l.neurons[0].weights) {
+		panic("number of inputs does not match number of weights")
+	}
+
 	outputs := make([]*engine.Value, len(l.neurons))
 	for i, neuron := range l.neurons {
 		outputs[i] = neuron.Calculate(inputs)
