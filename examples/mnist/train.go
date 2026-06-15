@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/estevamfurtado/micrograd-go/engine"
 	"github.com/estevamfurtado/micrograd-go/nn"
@@ -15,15 +16,13 @@ type LossCalculator interface {
 
 type Trainer struct {
 	model      *nn.MLP
-	lr         float64
-	epochs     int
-	batch_size int
+	config     Config
 	lossCalc   LossCalculator
 	testData   Samples
 }
 
-func NewTrainer(model *nn.MLP, lr float64, epochs, batchSize int, lossCalc LossCalculator, testData Samples) *Trainer {
-	return &Trainer{model: model, lr: lr, epochs: epochs, batch_size: batchSize, lossCalc: lossCalc, testData: testData}
+func NewTrainer(model *nn.MLP, config Config, lossCalc LossCalculator, testData Samples) *Trainer {
+	return &Trainer{model: model, config: config, lossCalc: lossCalc, testData: testData}
 }
 
 func (t *Trainer) SampleInputs(sample Sample) []*engine.Value {
@@ -35,10 +34,20 @@ func (t *Trainer) SampleInputs(sample Sample) []*engine.Value {
 }
 
 func (t *Trainer) learningRate(epoch int) float64 {
-	if t.epochs <= 1 {
-		return t.lr
+	if t.config.Epochs <= 1 {
+		return t.config.LR
 	}
-	return t.lr * (1.0 - 0.9*float64(epoch)/float64(t.epochs))
+	return t.config.LR * (1.0 - 0.9*float64(epoch)/float64(t.config.Epochs))
+}
+
+func (t *Trainer) logHyperparams() {
+	c := t.config
+	fmt.Printf("hidden_size=%d limit=%d test_limit=%d epochs=%d batch_size=%d lr=%g\n",
+		c.HiddenSize, c.Limit, c.TestLimit, c.Epochs, c.BatchSize, c.LR)
+}
+
+func minutesSince(start time.Time) float64 {
+	return time.Since(start).Minutes()
 }
 
 func (t *Trainer) zeroGrad() {
@@ -47,26 +56,35 @@ func (t *Trainer) zeroGrad() {
 	}
 }
 
+const logEveryNBatches = 50
+
 func (t *Trainer) Train(data Samples) {
+	t.logHyperparams()
+	trainingStart := time.Now()
+	fmt.Printf("training started (%.2f min)\n", minutesSince(trainingStart))
+
 	testAccuracy := t.Accuracy(t.testData)
 	fmt.Printf("initial test accuracy: %.1f%%\n", testAccuracy*100)
 
+	fmt.Printf("%5s | %5s | %6s | %6s | %8s\n", "epoch", "batch", "min", "loss", "accuracy")
+
 	rng := rand.New(rand.NewSource(1337))
-	for epoch := 0; epoch < t.epochs; epoch++ {
+	for epoch := 0; epoch < t.config.Epochs; epoch++ {
+		fmt.Printf("epoch %d started (%.2f min, lr %.3f)\n", epoch, minutesSince(trainingStart), t.learningRate(epoch))
+
 		data.Shuffle(rng)
-		batches := len(data) / t.batch_size
+		batches := len(data) / t.config.BatchSize
 		lr := t.learningRate(epoch)
 
-		fmt.Printf("epoch %d/%d: learning rate %.3f\n", epoch, t.epochs, lr)
-
 		for batch := 0; batch < batches; batch++ {
-			batchData := data[batch*t.batch_size : (batch+1)*t.batch_size]
+			batchData := data[batch*t.config.BatchSize : (batch+1)*t.config.BatchSize]
 
 			t.zeroGrad()
 			loss, accuracy := t.loss(batchData)
 
-			if batch%50 == 0 {
-				fmt.Printf("\tbatch %d/%d: loss %.2f, accuracy %.1f%%\n", batch, batches, loss.Data, accuracy*100)
+			if batch%logEveryNBatches == 0 {
+				fmt.Printf("%5d | %5d | %6.2f | %6.2f | %7.1f%%\n",
+					epoch, batch, minutesSince(trainingStart), loss.Data, accuracy*100)
 			}
 
 			loss.Backward()
@@ -78,9 +96,11 @@ func (t *Trainer) Train(data Samples) {
 
 		testAccuracy = t.Accuracy(t.testData)
 		trainAccuracy := t.Accuracy(data)
-		fmt.Printf("test: %.1f%%, train: %.1f%%\n", testAccuracy*100, trainAccuracy*100)
+		fmt.Printf("epoch %d done (%.2f min): test %.1f%%, train %.1f%%\n",
+			epoch, minutesSince(trainingStart), testAccuracy*100, trainAccuracy*100)
 	}
 
+	fmt.Printf("training finished (%.2f min)\n", minutesSince(trainingStart))
 }
 
 func (t *Trainer) loss(batchData []Sample) (*engine.Value, float64) {

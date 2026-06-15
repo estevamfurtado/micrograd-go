@@ -61,6 +61,6 @@ func main() {
 	fmt.Printf("model: %d parameters\n", len(model.Parameters()))
 
 	loss := &CrossEntropyCalculator{}
-	trainer := NewTrainer(model, config.LR, config.Epochs, config.BatchSize, loss, test)
+	trainer := NewTrainer(model, config, loss, test)
 	trainer.Train(train)
 }
