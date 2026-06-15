@@ -47,7 +47,7 @@ func main() {
 
 	fmt.Printf("train: %d samples, test: %d samples\n", len(train), len(test))
 
-	model := nn.NewMLP(numPixels, []int{16, numClasses})
+	model := nn.NewMLP(numPixels, []int{128, numClasses})
 	fmt.Printf("model: %d parameters\n", len(model.Parameters()))
 
 	loss := &CrossEntropyCalculator{}
