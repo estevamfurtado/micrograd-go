@@ -1,41 +1,51 @@
 # micrograd-go
 
-Reimplementação do [micrograd](https://github.com/karpathy/micrograd) do Andrej Karpathy em Go — projeto de estudo para reforçar autograd, backpropagation e redes neurais do zero.
+A Go reimplementation of Andrej Karpathy's [micrograd](https://github.com/karpathy/micrograd) — a learning project to build autograd, backpropagation, and neural networks from scratch.
 
-> **Status:** scaffold inicial. Nada implementado ainda.
+## References
 
-## Referências
+- Original repo: [karpathy/micrograd](https://github.com/karpathy/micrograd)
+- Lecture: [micrograd explained - backpropagation and training neural networks](https://www.youtube.com/watch?v=VMj-3S1tku0)
 
-- Repositório original: [karpathy/micrograd](https://github.com/karpathy/micrograd)
-- Vídeo-aula: [micrograd explained - backpropagation and training neural networks](https://www.youtube.com/watch?v=VMj-3S1tku0)
+## What is micrograd?
 
-## O que é o micrograd?
+A scalar autograd engine (~100 lines) plus a minimal neural network library (~50 lines) with a PyTorch-like API. Every operation is a scalar; the computation graph is built dynamically and gradients flow via reverse-mode backpropagation.
 
-Uma engine de autograd escalar (~100 linhas) + uma biblioteca de redes neurais mínima (~50 linhas) com API estilo PyTorch. Cada operação é um escalar; o grafo computacional é construído dinamicamente e o gradiente flui via backpropagation em modo reverso.
-
-## Estrutura do projeto
+## Project structure
 
 ```
 micrograd-go/
-├── engine/     # autograd — port de engine.py (Value, operadores, backward)
-├── nn/         # redes neurais — port de nn.py (Module, Neuron, Layer, MLP)
-└── examples/   # demos de treino (futuro)
+├── engine/          # autograd — port of engine.py (Value, ops, backward)
+├── nn/              # neural nets — port of nn.py (Neuron, Layer, MLP)
+├── datasets/        # toy datasets (make_moons, JSONL I/O)
+└── examples/moons/  # train an MLP on the moons dataset (demo.ipynb equivalent)
 ```
 
-## Roadmap de implementação
-
-1. **engine** — struct `Value`, operadores aritméticos, `Tanh`, `ReLU`, `Pow`, `Backward()`
-2. **nn** — `Module`, `Neuron`, `Layer`, `MLP` e coleta de parâmetros
-3. **examples** — treinar um MLP em dataset toy (equivalente ao `demo.ipynb`)
-4. **testes** — gradient checking com diferenças finitas
-
-## Desenvolvimento
+## Quick start
 
 ```bash
 go build ./...
 go test ./...
+
+# generate dataset, export JSONL, plot points, and train the MLP
+go run ./examples/moons/
 ```
 
-## Licença
+Run from the repo root so paths like `examples/moons/moons.jsonl` resolve correctly.
 
-MIT — mesmo espírito educacional do projeto original.
+## What's implemented
+
+- **engine** — `Value`, `Add`, `Mul`, `Pow`, `Div`, `Neg`, `ReLU`, `Backward()`
+- **nn** — `Neuron`, `Layer`, `MLP` with ReLU hidden layers and a linear output layer
+- **datasets** — `make_moons`, JSONL read/write
+- **examples/moons** — hinge loss, L2 regularization, SGD with learning-rate decay
+
+## Roadmap
+
+- [ ] decision boundary plot
+- [ ] gradient checking with finite differences
+- [ ] `Tanh` activation (optional)
+
+## License
+
+MIT — same educational spirit as the original project.
