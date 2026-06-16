@@ -6,14 +6,18 @@ type MLP struct {
 	layers []*Layer
 }
 
-func NewMLP(layers ...*Layer) *MLP {
-	for i := 0; i < len(layers)-1; i++ {
-		if layers[i].out != layers[i+1].in {
-			panic("number of inputs does not match number of outputs")
-		}
+func NewMLP() *MLP {
+	return &MLP{layers: []*Layer{}}
+}
+
+func (m *MLP) AddLayer(layer *Layer) *MLP {
+	lastLayer := m.layers[len(m.layers)-1]
+	if lastLayer.out != layer.in {
+		panic("number of inputs does not match number of outputs")
 	}
 
-	return &MLP{layers: layers}
+	m.layers = append(m.layers, layer)
+	return m
 }
 
 func (m *MLP) Calculate(inputs []*engine.Value) []*engine.Value {

@@ -19,7 +19,7 @@ func main() {
 	h1 := nn.NewLayer(16, 16, nn.RandomInit, engine.ReLU)
 	out := nn.NewLayer(16, 1, nn.RandomInit, linear)
 
-	model := nn.NewMLP(in, h1, out) // 2-layer neural network
+	model := nn.NewMLP().AddLayer(in).AddLayer(h1).AddLayer(out)
 	fmt.Printf("model has %d parameters\n", len(model.Parameters()))
 
 	// i only have 100 samples

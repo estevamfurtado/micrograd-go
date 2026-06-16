@@ -54,10 +54,11 @@ func main() {
 
 	fmt.Printf("train: %d samples, test: %d samples\n", len(train), len(test))
 
-	hidden := nn.NewLayer(numPixels, config.HiddenSize, nn.HeInit, engine.ReLU)
+	input := nn.NewLayer(numPixels, config.HiddenSize, nn.HeInit, engine.ReLU)
 	out := nn.NewLayer(config.HiddenSize, numClasses, nn.XavierInit, linear)
 
-	model := nn.NewMLP(hidden, out)
+	model := nn.NewMLP().AddLayer(input).AddLayer(out)
+
 	fmt.Printf("model: %d parameters\n", len(model.Parameters()))
 
 	loss := &CrossEntropyCalculator{}
