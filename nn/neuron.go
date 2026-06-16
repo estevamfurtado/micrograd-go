@@ -10,11 +10,6 @@ type Neuron struct {
 	activation func(x *engine.Value) *engine.Value
 }
 
-type ParamsFactory struct {
-	BiasGenerator   func() float64
-	WeightGenerator func(fanIn int) float64
-}
-
 func NewNeuron(in int, factory ParamsFactory, activation func(x *engine.Value) *engine.Value) *Neuron {
 	bias := engine.Const(factory.BiasGenerator())
 	weights := make([]*engine.Value, in)

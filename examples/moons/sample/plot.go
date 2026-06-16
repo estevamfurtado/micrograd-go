@@ -1,4 +1,4 @@
-package main
+package sample
 
 import (
 	"fmt"
@@ -6,11 +6,13 @@ import (
 	"math"
 	"os"
 
-	"github.com/estevamfurtado/micrograd-go/engine"
-	"github.com/estevamfurtado/micrograd-go/nn"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
+
+	"github.com/estevamfurtado/micrograd-go/engine"
+	"github.com/estevamfurtado/micrograd-go/nn"
+	"github.com/estevamfurtado/micrograd-go/nn/train"
 )
 
 type decisionGrid struct {
@@ -34,7 +36,7 @@ func (g *decisionGrid) Y(r int) float64 {
 	return g.yMin + float64(r)*g.step
 }
 
-func dataBounds(data Samples) (xMin, xMax, yMin, yMax float64) {
+func dataBounds(data train.Samples) (xMin, xMax, yMin, yMax float64) {
 	xMin, xMax = data[0].X[0], data[0].X[0]
 	yMin, yMax = data[0].X[1], data[0].X[1]
 	for _, s := range data[1:] {
@@ -46,7 +48,7 @@ func dataBounds(data Samples) (xMin, xMax, yMin, yMax float64) {
 	return xMin, xMax, yMin, yMax
 }
 
-func buildDecisionGrid(model *nn.MLP, data Samples, step float64) *decisionGrid {
+func buildDecisionGrid(model *nn.MLP, data train.Samples, step float64) *decisionGrid {
 	xMin, xMax, yMin, yMax := dataBounds(data)
 	xMin, xMax = xMin-1, xMax+1
 	yMin, yMax = yMin-1, yMax+1
@@ -92,7 +94,7 @@ func (p twoColorPalette) Colors() []color.Color {
 	return p.colors
 }
 
-func PlotDecisionBoundary(model *nn.MLP, data Samples, path string) error {
+func PlotDecisionBoundary(model *nn.MLP, data train.Samples, path string) error {
 	const step = 0.25
 
 	grid := buildDecisionGrid(model, data, step)
@@ -148,8 +150,8 @@ func PlotDecisionBoundary(model *nn.MLP, data Samples, path string) error {
 	return nil
 }
 
-func plotDecisionBoundaryOrExit(model *nn.MLP, data Samples) {
-	path := "examples/moons/decision_boundary.png"
+func PlotDecisionBoundaryOrExit(model *nn.MLP, data train.Samples) {
+	path := "decision_boundary.png"
 	if err := PlotDecisionBoundary(model, data, path); err != nil {
 		fmt.Fprintf(os.Stderr, "decision boundary plot: %v\n", err)
 		os.Exit(1)

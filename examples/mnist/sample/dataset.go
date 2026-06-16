@@ -1,37 +1,23 @@
-package main
+package sample
 
 import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"math/rand"
 	"os"
 	"strconv"
+
+	"github.com/estevamfurtado/micrograd-go/nn/train"
 )
 
 const (
-	numPixels  = 28 * 28
-	numClasses = 10
+	NumPixels  = 28 * 28
+	NumClasses = 10
 )
-
-// Sample is one MNIST image: normalized pixels and integer label 0-9.
-type Sample struct {
-	Label int
-	X     [numPixels]float64
-}
-
-type Samples []Sample
-
-// OneHot encodes a digit as a length-10 vector with a 1 at the label index.
-func OneHot(label int) [numClasses]float64 {
-	var v [numClasses]float64
-	v[label] = 1
-	return v
-}
 
 // LoadCSV reads pjreddie MNIST CSV: label,784 pixel columns (0-255).
 // Pixels are normalized to [0, 1]. limit caps rows (0 = all).
-func LoadCSV(path string, limit int) (Samples, error) {
+func LoadCSV(path string, limit int) (train.Samples, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -39,7 +25,7 @@ func LoadCSV(path string, limit int) (Samples, error) {
 	defer f.Close()
 
 	r := csv.NewReader(f)
-	samples := Samples{}
+	samples := train.Samples{}
 
 	for {
 		if limit > 0 && len(samples) >= limit {
@@ -53,21 +39,23 @@ func LoadCSV(path string, limit int) (Samples, error) {
 		if err != nil {
 			return nil, fmt.Errorf("read %s: %w", path, err)
 		}
-		if len(record) != numPixels+1 {
-			return nil, fmt.Errorf("expected %d columns, got %d", numPixels+1, len(record))
+		if len(record) != NumPixels+1 {
+			return nil, fmt.Errorf("expected %d columns, got %d", NumPixels+1, len(record))
 		}
 
 		label, err := strconv.Atoi(record[0])
 		if err != nil {
 			return nil, fmt.Errorf("label: %w", err)
 		}
-		if label < 0 || label >= numClasses {
+		if label < 0 || label >= NumClasses {
 			return nil, fmt.Errorf("label out of range: %d", label)
 		}
 
-		var s Sample
-		s.Label = label
-		for i := 0; i < numPixels; i++ {
+		s := train.Sample{
+			Y: float64(label),
+			X: make([]float64, NumPixels),
+		}
+		for i := 0; i < NumPixels; i++ {
 			pix, err := strconv.Atoi(record[i+1])
 			if err != nil {
 				return nil, fmt.Errorf("pixel %d: %w", i, err)
@@ -78,10 +66,4 @@ func LoadCSV(path string, limit int) (Samples, error) {
 	}
 
 	return samples, nil
-}
-
-func (s Samples) Shuffle(rng *rand.Rand) {
-	rng.Shuffle(len(s), func(i, j int) {
-		s[i], s[j] = s[j], s[i]
-	})
 }

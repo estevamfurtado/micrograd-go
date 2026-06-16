@@ -28,5 +28,8 @@ go.work.sum
 .DS_Store
 Thumbs.db
 
-# MNIST CSVs (downloaded on first run)
-examples/mnist/data/
+# Example datasets (downloaded or generated on first run)
+examples/*/sample/data/
+
+# Training run outputs (timestamped subdirs)
+examples/mnist/runs/20*

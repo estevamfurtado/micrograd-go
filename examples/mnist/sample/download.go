@@ -1,4 +1,4 @@
-package main
+package sample
 
 import (
 	"fmt"
@@ -22,7 +22,7 @@ var dataFiles = []struct {
 	{testURL, "mnist_test.csv"},
 }
 
-func dataDir() string {
+func DataDir() string {
 	_, file, _, ok := runtime.Caller(0)
 	if !ok {
 		return "data"
@@ -30,8 +30,8 @@ func dataDir() string {
 	return filepath.Join(filepath.Dir(file), "data")
 }
 
-func ensureData() error {
-	dir := dataDir()
+func EnsureData() error {
+	dir := DataDir()
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}

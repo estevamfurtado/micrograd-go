@@ -17,8 +17,9 @@ A scalar autograd engine plus a minimal neural network library with a PyTorch-li
 micrograd-go/
 ├── engine/              # autograd — port of engine.py (Value, ops, backward)
 ├── nn/                  # neural nets — port of nn.py (Neuron, Layer, MLP)
-└── examples/moons/      # moons demo (MakeMoons, JSONL, train, plot)
-    └── moons.jsonl      # committed dataset (100 samples, seed 1337)
+└── examples/
+    ├── mnist/sample/data/   # MNIST CSVs (downloaded on first run, gitignored)
+    └── moons/sample/data/   # moons.jsonl (generated on first run, gitignored)
 ```
 
 ## Quick start
@@ -27,15 +28,15 @@ micrograd-go/
 go build ./...
 go test ./...
 
-# load moons.jsonl and train the MLP (100 epochs, full batch)
+# load moons data and train the MLP (100 epochs, full batch)
 go run ./examples/moons/
 ```
 
-Run from the **repo root** — paths like `examples/moons/moons.jsonl` are relative to the working directory.
+Data files live under `examples/*/sample/data/` and are created automatically on first run (`EnsureData`).
 
-The moons example loads the committed JSONL file, trains a `2 → 16 → 16 → 1` MLP, and saves a decision boundary plot to `examples/moons/decision_boundary.png`.
+The moons example trains a `2 → 16 → 16 → 1` MLP and saves a decision boundary plot to `decision_boundary.png` in the moons example directory.
 
-To regenerate the dataset and scatter plot (`moons.png`), call `GenerateDataset(100, 0.1)` from `examples/moons/dataset.go` (not wired into `main` by default).
+To regenerate the dataset and scatter plot (`moons.png`), call `sample.GenerateDataset(100, 0.1)` (not wired into `main` by default).
 
 ## What's implemented
 

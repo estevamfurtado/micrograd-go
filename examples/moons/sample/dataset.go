@@ -1,4 +1,4 @@
-package main
+package sample
 
 import (
 	"fmt"
@@ -9,16 +9,21 @@ import (
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
+
+	"github.com/estevamfurtado/micrograd-go/nn/train"
 )
 
-// Default values:
-// nSamples = 100
-// noise = 0.1
+// GenerateDataset writes moons.jsonl and a scatter plot (n=100, noise=0.1).
 func GenerateDataset(nSamples int, noise float64) {
 	rng := rand.New(rand.NewSource(1337))
 	data := MakeMoons(nSamples, noise, rng)
 
-	jsonlPath := "examples/moons/moons.jsonl"
+	if err := os.MkdirAll(DataDir(), 0o755); err != nil {
+		fmt.Fprintf(os.Stderr, "mkdir data: %v\n", err)
+		os.Exit(1)
+	}
+
+	jsonlPath := dataPath("moons.jsonl")
 	if err := WriteJSONL(jsonlPath, data); err != nil {
 		fmt.Fprintf(os.Stderr, "jsonl export: %v\n", err)
 		os.Exit(1)
@@ -68,9 +73,13 @@ func GenerateDataset(nSamples int, noise float64) {
 	fmt.Printf("labels: y in {-1, +1} — same as y = y*2 - 1 in Python\n")
 }
 
-func loadMoons() Samples {
-	jsonlPath := "examples/moons/moons.jsonl"
-	data, err := ReadJSONL(jsonlPath)
+func LoadMoons() train.Samples {
+	if err := EnsureData(); err != nil {
+		fmt.Fprintf(os.Stderr, "ensure data: %v\n", err)
+		os.Exit(1)
+	}
+
+	data, err := ReadJSONL(dataPath("moons.jsonl"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "jsonl load: %v\n", err)
 		os.Exit(1)

@@ -8,6 +8,11 @@ type Layer struct {
 	neurons []*Neuron
 }
 
+type ParamsFactory struct {
+	BiasGenerator   func() float64
+	WeightGenerator func(fanIn int) float64
+}
+
 func NewLayer(in, out int, factory ParamsFactory, activation func(x *engine.Value) *engine.Value) *Layer {
 	neurons := make([]*Neuron, out)
 	for i := range neurons {

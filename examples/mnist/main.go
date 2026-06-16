@@ -5,63 +5,52 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/estevamfurtado/micrograd-go/engine"
+	"github.com/estevamfurtado/micrograd-go/examples/mnist/sample"
 	"github.com/estevamfurtado/micrograd-go/nn"
+	"github.com/estevamfurtado/micrograd-go/nn/train"
+	"github.com/estevamfurtado/micrograd-go/nn/train/loss"
 )
 
-// Config holds all training settings. Edit these values directly.
-type Config struct {
-	HiddenSize int     // hidden layer size
-	Limit      int     // max training rows (0 = full 60k)
-	TestLimit  int     // max test rows for eval (0 = full 10k)
-	Epochs     int     // training epochs
-	BatchSize  int     // batch size
-	LR         float64 // initial learning rate (decays per epoch)
-}
-
-var config = Config{
-	HiddenSize: 16,
-	Limit:      60_000,
-	TestLimit:  10_000,
-	Epochs:     10,
-	BatchSize:  32,
-	LR:         0.02,
-}
-
-func linear(x *engine.Value) *engine.Value {
-	return x
-}
-
 func main() {
-	if err := ensureData(); err != nil {
+	if err := sample.EnsureData(); err != nil {
 		fmt.Fprintf(os.Stderr, "download: %v\n", err)
 		os.Exit(1)
 	}
 
-	trainPath := filepath.Join(dataDir(), "mnist_train.csv")
-	testPath := filepath.Join(dataDir(), "mnist_test.csv")
+	trainPath := filepath.Join(sample.DataDir(), "mnist_train.csv")
+	testPath := filepath.Join(sample.DataDir(), "mnist_test.csv")
 
-	train, err := LoadCSV(trainPath, config.Limit)
+	cfg := train.Config{
+		HiddenSize: 16,
+		Limit:      60_000,
+		TestLimit:  10_000,
+		Epochs:     10,
+		BatchSize:  32,
+		LR:         0.02,
+		RunDir:     "runs",
+	}
+
+	trd, err := sample.LoadCSV(trainPath, cfg.Limit)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "load train: %v\n", err)
 		os.Exit(1)
 	}
-	test, err := LoadCSV(testPath, config.TestLimit)
+	ttd, err := sample.LoadCSV(testPath, cfg.TestLimit)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "load test: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("train: %d samples, test: %d samples\n", len(train), len(test))
+	fmt.Printf("train: %d samples, test: %d samples\n", len(trd), len(ttd))
 
-	input := nn.NewLayer(numPixels, config.HiddenSize, nn.HeInit, engine.ReLU)
-	out := nn.NewLayer(config.HiddenSize, numClasses, nn.XavierInit, linear)
+	input := nn.NewLayer(sample.NumPixels, cfg.HiddenSize, train.HeInit, train.ReLUActivation)
+	out := nn.NewLayer(cfg.HiddenSize, sample.NumClasses, train.XavierInit, train.LinearActivation)
 
 	model := nn.NewMLP().AddLayer(input).AddLayer(out)
 
 	fmt.Printf("model: %d parameters\n", len(model.Parameters()))
 
-	loss := &CrossEntropyCalculator{}
-	trainer := NewTrainer(model, config, loss, test)
-	trainer.Train(train)
+	loss := &loss.CrossEntropyCalculator{}
+	trainer := train.NewTrainer(model, cfg, loss, ttd)
+	trainer.Train(trd)
 }

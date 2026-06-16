@@ -1,13 +1,15 @@
-package main
+package sample
 
 import (
 	"encoding/json"
 	"io"
 	"os"
+
+	"github.com/estevamfurtado/micrograd-go/nn/train"
 )
 
 // WriteJSONL writes one JSON object per line: {"x":[x0,x1],"y":label}.
-func WriteJSONL(path string, samples Samples) error {
+func WriteJSONL(path string, samples train.Samples) error {
 	f, err := os.Create(path)
 	if err != nil {
 		return err
@@ -24,7 +26,7 @@ func WriteJSONL(path string, samples Samples) error {
 }
 
 // ReadJSONL reads one JSON object per line into samples.
-func ReadJSONL(path string) (Samples, error) {
+func ReadJSONL(path string) (train.Samples, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -32,10 +34,10 @@ func ReadJSONL(path string) (Samples, error) {
 	defer f.Close()
 
 	dec := json.NewDecoder(f)
-	samples := Samples{}
+	samples := train.Samples{}
 
 	for {
-		var s Sample
+		var s train.Sample
 		err := dec.Decode(&s)
 		if err == io.EOF {
 			break

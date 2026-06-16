@@ -11,9 +11,11 @@ func NewMLP() *MLP {
 }
 
 func (m *MLP) AddLayer(layer *Layer) *MLP {
-	lastLayer := m.layers[len(m.layers)-1]
-	if lastLayer.out != layer.in {
-		panic("number of inputs does not match number of outputs")
+	if n := len(m.layers); n > 0 {
+		lastLayer := m.layers[n-1]
+		if lastLayer.out != layer.in {
+			panic("number of inputs does not match number of outputs")
+		}
 	}
 
 	m.layers = append(m.layers, layer)

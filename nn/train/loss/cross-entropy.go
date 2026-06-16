@@ -1,19 +1,32 @@
-package main
+package loss
 
 import (
 	"github.com/estevamfurtado/micrograd-go/engine"
+	"github.com/estevamfurtado/micrograd-go/nn/train"
 )
 
 type CrossEntropyCalculator struct{}
 
-func (l *CrossEntropyCalculator) Calculate(logits []*engine.Value, sample Sample) *engine.Value {
-	probs := Softmax(logits)
-	oneHot := OneHot(sample.Label)
-	return CrossEntropyOneHot(probs, oneHot)
+func OneHot(label int, numClasses int) []float64 {
+	v := make([]float64, numClasses)
+	v[label] = 1
+	return v
 }
 
-func (l *CrossEntropyCalculator) IsAccurate(logits []*engine.Value, sample Sample) bool {
-	return argmax(logits) == sample.Label
+func (l *CrossEntropyCalculator) Calculate(logits []*engine.Value, sample train.Sample) *engine.Value {
+	probs := Softmax(logits)
+	return crossEntropyOneHot(probs, oneHot(int(sample.Y), len(logits)))
+}
+
+func (l *CrossEntropyCalculator) IsAccurate(logits []*engine.Value, sample train.Sample) bool {
+	answer := 0
+	for i, l := range logits {
+		if l.Data > logits[answer].Data {
+			answer = i
+		}
+	}
+
+	return answer == int(sample.Y)
 }
 
 const logEps = 1e-7
@@ -45,8 +58,14 @@ func Softmax(logits []*engine.Value) []*engine.Value {
 	return probs
 }
 
-func CrossEntropyOneHot(probs []*engine.Value, oneHot [numClasses]float64) *engine.Value {
-	terms := make([]*engine.Value, 0, numClasses)
+func oneHot(label int, numClasses int) map[int]float64 {
+	v := make(map[int]float64, numClasses)
+	v[label] = 1
+	return v
+}
+
+func crossEntropyOneHot(probs []*engine.Value, oneHot map[int]float64) *engine.Value {
+	terms := make([]*engine.Value, 0, len(oneHot))
 	for i, p := range probs {
 		if oneHot[i] == 0 {
 			continue
@@ -55,14 +74,4 @@ func CrossEntropyOneHot(probs []*engine.Value, oneHot [numClasses]float64) *engi
 		terms = append(terms, engine.Mul(engine.Const(oneHot[i]), logP))
 	}
 	return engine.Neg(engine.Add(terms...))
-}
-
-func argmax(logits []*engine.Value) int {
-	best := 0
-	for i := 1; i < len(logits); i++ {
-		if logits[i].Data > logits[best].Data {
-			best = i
-		}
-	}
-	return best
 }
